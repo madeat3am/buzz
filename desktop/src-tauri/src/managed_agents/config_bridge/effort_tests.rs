@@ -128,6 +128,7 @@ fn harness_def(env: BTreeMap<String, String>) -> HarnessDefinition {
         label: "Custom".to_string(),
         command: "custom".to_string(),
         args: vec![],
+        mcp_command: None,
         env,
         install_instructions_url: String::new(),
         install_hint: String::new(),

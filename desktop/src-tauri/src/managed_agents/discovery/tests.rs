@@ -70,6 +70,9 @@ fn normalizes_claude_and_codex_args_to_empty() {
     );
 }
 
+#[path = "preset_args_tests.rs"]
+mod preset_args_tests;
+
 #[test]
 fn resolves_buzz_agent_avatar() {
     assert_eq!(
@@ -1542,6 +1545,7 @@ fn deleted_harness_summary_display_and_spawn_sentence_agree() {
         label: "Doomed".to_string(),
         command: "doomed-bin".to_string(),
         args: vec![],
+        mcp_command: None,
         env: Default::default(),
         install_instructions_url: String::new(),
         install_hint: String::new(),
@@ -1572,34 +1576,24 @@ fn deleted_harness_summary_display_and_spawn_sentence_agree() {
 
 // ── I2: custom catalog entry carries definition_env for the edit round-trip ───
 
-/// A custom harness definition that includes env vars must surface those vars
-/// in the `definition_env` field of the resulting `AcpRuntimeCatalogEntry`.
-///
-/// This proves the edit-form round-trip: the backend carries env into the
-/// catalog, the frontend reads it back when opening the edit form, and Save
-/// therefore preserves existing env vars rather than silently erasing them.
 #[test]
-fn custom_catalog_entry_carries_definition_env_for_edit_roundtrip() {
+fn custom_catalog_entry_carries_definition_fields_for_edit_roundtrip() {
     use crate::managed_agents::custom_harnesses::registry_test_lock;
     use crate::managed_agents::discovery::discover_acp_runtimes_from;
     use std::{collections::BTreeMap, fs};
     use tempfile::tempdir;
 
-    // Discovery's auth probes read/warm the process-global PATH and
-    // login-shell-PATH caches, and its final step publishes to the global
-    // harness registry — hold both guards so parallel tests (e.g. the
-    // PATH-swapping resolution tests) can't observe or absorb torn state.
-    // Lock order for tests that need both: path lock first, then registry.
+    // Discovery probes PATH and publishes the global harness registry.
     let _path_guard = crate::managed_agents::lock_path_mutex();
     let _lock = registry_test_lock();
     let dir = tempdir().unwrap();
-    // Write a custom definition with two env vars.
     fs::write(
         dir.path().join("env-harness.json"),
         r#"{
             "id": "env-harness",
             "label": "Env Harness",
             "command": "env-harness-bin",
+            "mcpCommand": "read-only-mcp",
             "args": [],
             "env": { "CURSOR_ACP": "1", "MY_TOKEN": "abc" }
         }"#,
@@ -1622,6 +1616,11 @@ fn custom_catalog_entry_carries_definition_env_for_edit_roundtrip() {
     assert_eq!(
         entry.definition_env, expected,
         "catalog entry must carry definition env vars so the edit form can read them back"
+    );
+    assert_eq!(
+        entry.mcp_command.as_deref(),
+        Some("read-only-mcp"),
+        "catalog entry must carry the MCP command so the edit form preserves it"
     );
 }
 
@@ -1686,6 +1685,7 @@ fn harness_def(
         label: label.to_string(),
         command: command.to_string(),
         args: vec![],
+        mcp_command: None,
         env: Default::default(),
         install_instructions_url: String::new(),
         install_hint: String::new(),

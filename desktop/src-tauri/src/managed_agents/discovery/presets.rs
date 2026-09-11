@@ -238,6 +238,7 @@ pub(crate) fn preset_harness_definitions(
                 label: preset.label.to_string(),
                 command: preset.command.to_string(),
                 args: preset.args.iter().map(|arg| arg.to_string()).collect(),
+                mcp_command: None,
                 env: Default::default(),
                 install_instructions_url: preset.install_instructions_url.to_string(),
                 install_hint: preset.install_hint.to_string(),
@@ -262,6 +263,27 @@ pub(super) fn preset_command_for_id(id: &str) -> Option<&'static str> {
         .iter()
         .find(|p| p.id == id)
         .map(|p| p.command)
+}
+
+/// Return the declared args for a preset harness, matched by runtime id or by
+/// normalised command, or `None` if the input is not a known preset.
+///
+/// This is the args-side counterpart to `preset_command_for_id`. It lets
+/// `normalize_agent_args` treat `PRESET_HARNESSES` as the single source of
+/// truth for preset invocations instead of duplicating them in a hardcoded
+/// builtin-only match.
+///
+/// Deliberately static-only: no loaded-registry tier. This runs inside
+/// `preset_catalog_entry`, which is called while the catalog is being built,
+/// so acquiring the registry lock here risks deadlocking against a concurrent
+/// warm/refresh. Registry-backed harnesses already resolve their args by
+/// runtime id in `resolve_effective_harness_descriptor`.
+pub(super) fn preset_args_for_command(command: &str) -> Option<Vec<String>> {
+    let normalized = super::normalize_command_identity(command);
+    PRESET_HARNESSES
+        .iter()
+        .find(|p| p.id == normalized || super::normalize_command_identity(p.command) == normalized)
+        .map(|p| p.args.iter().map(|arg| arg.to_string()).collect())
 }
 
 /// Return the primary harness command for a given runtime id, or `None`.
