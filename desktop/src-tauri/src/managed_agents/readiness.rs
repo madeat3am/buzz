@@ -80,11 +80,7 @@ pub(crate) struct EffectiveAgentEnv {
 
 // ── Typed effective-harness descriptor ───────────────────────────────────────
 //
-// A single owned type that fully describes what a spawn would run.  Produced
-// by `resolve_effective_harness_descriptor` and consumed by spawn_agent_child,
-// spawn_snapshot, build_managed_agent_summary, get_agent_models, and
-// agent_readiness — so the harness-definition lookup and arg/env resolution
-// happen exactly once, in one place.
+// One owned type keeps spawn harness lookup and capability/env resolution unified.
 
 /// The complete effective description of a harness spawn: resolved command,
 /// args, and layered env.  This is the single source of truth for what will
@@ -92,16 +88,13 @@ pub(crate) struct EffectiveAgentEnv {
 /// the effective values.
 #[derive(Debug, Clone)]
 pub(crate) struct EffectiveHarnessDescriptor {
-    /// The raw effective command string (e.g. `"buzz-agent"`, `"my-acp-agent"`).
-    /// Used for `known_acp_runtime` lookup and hashing.
+    /// Raw effective command, used for runtime lookup and hashing.
     pub command: String,
-    /// Normalized effective args.  Instance args win when non-empty; otherwise
-    /// the harness definition's args apply.
+    /// Normalized args; non-empty instance args win over definition args.
     pub args: Vec<String>,
     /// MCP sidecar from the custom definition or compiled runtime metadata.
     pub mcp_command: Option<String>,
-    /// The full layered process env: baked floor → runtime metadata → definition
-    /// env → global → persona → agent.
+    /// Layered process env: baked floor → runtime → definition → global → persona → agent.
     pub env: BTreeMap<String, String>,
 }
 
@@ -167,11 +160,7 @@ pub(crate) fn resolve_effective_harness_descriptor(
     let mcp_command = harness_def
         .as_ref()
         .and_then(|definition| definition.mcp_command.clone())
-        .or_else(|| {
-            runtime_meta
-                .and_then(|runtime| runtime.mcp_command)
-                .map(str::to_string)
-        });
+        .or_else(|| runtime_meta.and_then(|runtime| runtime.mcp_command.map(str::to_string)));
 
     let effective_env =
         resolve_effective_agent_env_with_def(record, personas, runtime_meta, global, harness_def);

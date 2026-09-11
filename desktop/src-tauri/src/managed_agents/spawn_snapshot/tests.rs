@@ -850,10 +850,10 @@ fn spawn_snapshot_changes_when_definition_env_changes() {
     assert_ne!(s1, s2, "adding definition env must change the snapshot");
 }
 
-/// Editing a custom definition's MCP sidecar changes the spawn hash, so a
+/// Editing a custom definition's MCP sidecar changes the spawn snapshot, so a
 /// running agent is marked for restart before the new sidecar can take effect.
 #[test]
-fn spawn_hash_changes_when_definition_mcp_command_changes() {
+fn spawn_snapshot_changes_when_definition_mcp_command_changes() {
     use crate::managed_agents::custom_harnesses::{
         registry_test_lock, warm_harness_registry_from_dir,
     };
@@ -877,7 +877,7 @@ fn spawn_hash_changes_when_definition_mcp_command_changes() {
         crate::managed_agents::resolve_effective_harness_descriptor(&r, &[], &Default::default())
             .unwrap();
     assert_eq!(descriptor.mcp_command.as_deref(), Some("mcp-v1"));
-    let h1 = spawn_config_hash(&r, &[], &[], "ws://relay", &Default::default());
+    let h1 = snapshot(&r, &[], &[], "ws://relay", &Default::default());
 
     fs::write(
         &path,
@@ -886,10 +886,10 @@ fn spawn_hash_changes_when_definition_mcp_command_changes() {
     .unwrap();
     warm_harness_registry_from_dir(Some(dir.path()));
 
-    let h2 = spawn_config_hash(&r, &[], &[], "ws://relay", &Default::default());
+    let h2 = snapshot(&r, &[], &[], "ws://relay", &Default::default());
     assert_ne!(
         h1, h2,
-        "changing the MCP command must change the spawn hash"
+        "changing the MCP command must change the spawn snapshot"
     );
 }
 
