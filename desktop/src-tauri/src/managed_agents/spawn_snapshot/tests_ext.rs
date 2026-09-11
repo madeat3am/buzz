@@ -102,6 +102,7 @@ fn effective_effort_reads_the_projected_key_for_the_runtime() {
     let descriptor = EffectiveHarnessDescriptor {
         command: "goose".into(),
         args: vec![],
+        mcp_command: None,
         env: BTreeMap::from([("GOOSE_THINKING_EFFORT".to_string(), "high".to_string())]),
     };
     assert_eq!(effective_effort(&descriptor).as_deref(), Some("high"));
@@ -115,6 +116,7 @@ fn effective_effort_reads_acp_sentinel_for_keyless_runtime() {
     let descriptor = EffectiveHarnessDescriptor {
         command: "claude-code-acp".into(),
         args: vec![],
+        mcp_command: None,
         env: BTreeMap::from([("BUZZ_ACP_EFFORT_LEVEL".to_string(), "low".to_string())]),
     };
     assert_eq!(effective_effort(&descriptor).as_deref(), Some("low"));
@@ -125,6 +127,7 @@ fn effective_effort_is_none_without_a_projected_key() {
     let descriptor = EffectiveHarnessDescriptor {
         command: "goose".into(),
         args: vec![],
+        mcp_command: None,
         env: BTreeMap::new(),
     };
     assert_eq!(effective_effort(&descriptor), None);

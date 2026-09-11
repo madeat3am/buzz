@@ -319,6 +319,7 @@ mod tests {
         let descriptor = EffectiveHarnessDescriptor {
             command: "goose".into(),
             args: vec!["acp".into()],
+            mcp_command: None,
             env: BTreeMap::from([
                 ("GOOSE_MODE".into(), "custom".into()),
                 ("SECRET_FROM_PERSONA".into(), "secret".into()),
@@ -371,6 +372,7 @@ mod tests {
         let descriptor = EffectiveHarnessDescriptor {
             command: "goose".into(),
             args: vec![],
+            mcp_command: None,
             env: BTreeMap::from([
                 ("BUZZ_ACP_SESSION_POLICY".to_string(), "channel".to_string()),
                 ("KEEP_ME".to_string(), "yes".to_string()),
@@ -403,6 +405,7 @@ mod tests {
         let descriptor = EffectiveHarnessDescriptor {
             command: "claude".into(),
             args: vec![],
+            mcp_command: None,
             env: BTreeMap::new(),
         };
         let teams: Vec<TeamRecord> = vec![];
@@ -436,6 +439,7 @@ mod tests {
         let descriptor = EffectiveHarnessDescriptor {
             command: "claude".into(),
             args: vec![],
+            mcp_command: None,
             env: BTreeMap::from([
                 ("BUZZ_ACP_MODEL".to_string(), "user-sonnet".to_string()),
                 ("ANTHROPIC_MODEL".to_string(), "user-opus".to_string()),
@@ -477,6 +481,7 @@ mod tests {
         let descriptor = EffectiveHarnessDescriptor {
             command: "claude".into(),
             args: vec![],
+            mcp_command: None,
             env: BTreeMap::from([
                 ("BUZZ_ACP_MODEL".to_string(), "user-sonnet".to_string()),
                 ("ANTHROPIC_MODEL".to_string(), "user-opus".to_string()),
@@ -505,6 +510,7 @@ mod tests {
         let descriptor = EffectiveHarnessDescriptor {
             command: "goose".into(),
             args: vec![],
+            mcp_command: None,
             env: BTreeMap::from([("BUZZ_ACP_MODEL".to_string(), "user-model".to_string())]),
         };
         let launch =
@@ -527,6 +533,7 @@ mod tests {
         let descriptor = EffectiveHarnessDescriptor {
             command: "claude".into(),
             args: vec![],
+            mcp_command: None,
             // The single projected effort key the descriptor resolver emits.
             env: BTreeMap::from([("BUZZ_ACP_EFFORT_LEVEL".to_string(), "high".to_string())]),
         };
@@ -548,6 +555,7 @@ mod tests {
         let descriptor = EffectiveHarnessDescriptor {
             command: "claude".into(),
             args: vec![],
+            mcp_command: None,
             env: BTreeMap::new(),
         };
         let launch = build_launch_block(&record, &descriptor, &[], None, None, "owner-hex");
@@ -605,6 +613,7 @@ mod tests {
         let descriptor = EffectiveHarnessDescriptor {
             command: "claude".into(),
             args: vec![],
+            mcp_command: None,
             env: BTreeMap::from([("BUZZ_ACP_EFFORT_LEVEL".to_string(), "low".to_string())]),
         };
         let launch = build_launch_block(&record, &descriptor, &[], None, None, "owner-hex");
@@ -632,6 +641,7 @@ mod tests {
         let descriptor = EffectiveHarnessDescriptor {
             command: "openclaw".into(),
             args: vec![],
+            mcp_command: None,
             env: BTreeMap::new(),
         };
 
@@ -654,6 +664,7 @@ mod tests {
         let descriptor = EffectiveHarnessDescriptor {
             command: "goose".into(),
             args: vec![],
+            mcp_command: None,
             env: BTreeMap::new(),
         };
 
@@ -683,6 +694,7 @@ mod tests {
         let descriptor = EffectiveHarnessDescriptor {
             command: "openclaw".into(),
             args: vec![],
+            mcp_command: None,
             env: BTreeMap::new(),
         };
         let cap = crate::managed_agents::parallelism::OPENCLAW_MAX_PARALLELISM;
@@ -729,6 +741,7 @@ mod tests {
         let descriptor = EffectiveHarnessDescriptor {
             command: "goose".into(),
             args: vec![],
+            mcp_command: None,
             env: BTreeMap::new(),
         };
 
@@ -774,6 +787,7 @@ mod tests {
         let descriptor = EffectiveHarnessDescriptor {
             command: "openclaw".into(),
             args: vec![],
+            mcp_command: None,
             env: BTreeMap::new(),
         };
         let cap = crate::managed_agents::parallelism::OPENCLAW_MAX_PARALLELISM;

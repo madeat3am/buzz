@@ -318,6 +318,7 @@ pub(crate) fn prospective_spawn_config_snapshot(
                 EffectiveHarnessDescriptor {
                     command,
                     args,
+                    mcp_command: None,
                     env: Default::default(),
                 }
             });
